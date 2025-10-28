@@ -1,82 +1,104 @@
-import { type FC, useState } from "react";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Menu, X } from "lucide-react";
 
-const Header: FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+import { cn } from "@src/lib/utils";
 
-  const navItems = [
-    { label: "About", href: "#about" },
-    { label: "Experience", href: "#experience" },
-    { label: "Skills", href: "#skills" },
-    { label: "Education", href: "#education" },
-    { label: "Contact", href: "#contact" },
-  ];
+export default function Header() {
+  const [activeSection, setActiveSection] = useState("about");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navItems = ["about", "experience", "projects", "skills", "contact"];
+
+  const scrollToSection = (section: string) => {
+    setActiveSection(section);
+    const element = document.getElementById(section);
+    element?.scrollIntoView({ behavior: "smooth" });
+    setMobileMenuOpen(false);
+  };
 
   return (
-    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 w-full">
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8 w-full justify-center">
-            {navItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
+    <header className="fixed top-0 w-full bg-background/80 backdrop-blur-md border-b border-border z-50">
+      <motion.div
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between"
+      >
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="text-xl font-bold tracking-tight"
+        >
+          Nhan Phan
+        </motion.div>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        <nav className="hidden md:flex gap-8">
+          {navItems.map((item) => (
+            <motion.button
+              key={item}
+              type="button"
+              onClick={() => scrollToSection(item)}
+              className={cn(
+                "text-md font-bold transition-colors relative cursor-pointer",
+                activeSection === item
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+              whileHover={{ scale: 1.05 }}
             >
-              {isOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
+              {item.charAt(0).toUpperCase() + item.slice(1)}
+              {activeSection === item && (
+                <motion.div
+                  layoutId="underline"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-foreground"
+                  transition={{ type: "spring", stiffness: 380, damping: 40 }}
                 />
               )}
-            </svg>
-          </button>
-        </div>
+            </motion.button>
+          ))}
+        </nav>
 
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <nav className="md:hidden pb-4 space-y-2">
-            {navItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
+        <div className="flex md:hidden items-center gap-4">
+          <motion.button
+            type="button"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </motion.button>
+        </div>
+      </motion.div>
+
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden border-t border-border bg-background/95 backdrop-blur-md"
+          >
+            <div className="px-6 py-4 space-y-3">
+              {navItems.map((item) => (
+                <motion.button
+                  key={item}
+                  type="button"
+                  onClick={() => scrollToSection(item)}
+                  className={`block w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                    activeSection === item
+                      ? "bg-primary/20 text-primary font-medium"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                  whileHover={{ x: 4 }}
+                >
+                  {item.charAt(0).toUpperCase() + item.slice(1)}
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </header>
   );
-};
-
-export default Header;
+}

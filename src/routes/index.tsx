@@ -1,26 +1,41 @@
-import About from "@src/components/About";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+
 import Contact from "@src/components/Contact";
-import Education from "@src/components/Education";
 import Experience from "@src/components/Experience";
 import Header from "@src/components/Header";
-import Hero from "@src/components/Hero";
-import Skills from "@src/components/Skill";
+import Hero from "@src/components/Hero/hero";
+import Projects from "@src/components/Project";
+import Skills from "@src/components/Skills";
 import { createFileRoute } from "@tanstack/react-router";
+
+import "./globals.css";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-background">
+    <motion.main
+      initial={{ opacity: 0 }}
+      animate={isLoaded ? { opacity: 1 } : { opacity: 0 }}
+      transition={{ duration: 0.8 }}
+      className="min-h-screen text-foreground"
+    >
       <Header />
       <Hero />
-      <About />
+      {/* <About /> */}
       <Experience />
+      <Projects />
       <Skills />
-      <Education />
       <Contact />
-    </div>
+    </motion.main>
   );
 }

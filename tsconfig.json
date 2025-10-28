@@ -15,16 +15,12 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@src/*": ["src/*"]
     }
   },
-  "include": [
-    "src",
-    "vite.config.ts",
-    // If TailwindCSS is utilized
-    "postcss.config.js",
-    "tailwind.config.js"
-  ]
+  "include": ["src", "vite.config.ts"],
+  "exclude": ["node_modules", "dist", "postcss.config.mjs"]
 }

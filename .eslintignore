@@ -1,2 +1,5 @@
 .husky
 dist
+postcss.config.mjs
+*.config.mjs
+*.config.js
